@@ -1,1 +1,1 @@
-export {default} from './Calculator.js';
+export {default} from './CalculatorBtn.js';
