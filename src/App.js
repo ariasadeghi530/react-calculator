@@ -18,6 +18,7 @@ class App extends Component{
     }
     return buttons;
   }
+
   createOps = () => {
     let ops = ['+', '-', '*', '/', '=', 'RESET'];
     let opsBtns = [];
@@ -38,6 +39,7 @@ class App extends Component{
   handleOp = (oper) => {
     this.setState({op: oper});
   } 
+
   handleResult = () =>{
     let finalRes;
     switch (this.state.op) {
@@ -81,9 +83,9 @@ class App extends Component{
   render(){
    return(
      <div>
-       <h1>Num1: {this.state.numOne}</h1>
-       <h1>Num2: {this.state.numTwo}</h1>
+       <h1>First Number: {this.state.numOne}</h1>
        <h1>Operator: {this.state.op}</h1>
+       <h1>Second Number: {this.state.numTwo}</h1>
        <h1>Result: {this.state.result}</h1>
     {this.createNumbers()}
     <br />
