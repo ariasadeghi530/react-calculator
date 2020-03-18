@@ -18,13 +18,27 @@ class App extends Component{
     }
     return buttons;
   }
+  createOps = () => {
+    let ops = ['+', '-', '*', '/', '='];
+    let opsBtns = [];
+    for(let i = 0; i < ops.length; i++){
+      opsBtns.push(<CalculatorBtn num={ops[i]} />)
+    }
+    return opsBtns;
+  }
 
   render(){
    return(
      <div>
        <h1>Num1: {this.state.numOne}</h1>
        <h1>Num2: {this.state.numTwo}</h1>
+   <h1>Operator: {this.state.op}</h1>
+   <h1>Result: {this.state.op}</h1>
     {this.createNumbers()}
+    <br />
+    <br />
+    {this.createOps()}
+
      </div>
    );
   }
