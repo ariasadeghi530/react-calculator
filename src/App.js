@@ -1,101 +1,86 @@
-import React, {Component} from 'react';
-import CalculatorBtn from './components/CalculatorBtn';
+import React, { Component } from 'react'
+import axios from 'axios'
+import Header from './components/Header.js'
 
+class App extends Component {
 
-class App extends Component{
-  
   state = {
-    numOne: '',
-    numTwo: '',
-    op: '',
-    result: ''
+    watchlist: [],
+    movie: {},
+    title: ''
   }
 
-  createNumbers = () => {
-    let buttons = [];
-    for(let i = 0; i < 10; i++){
-      buttons.push(<CalculatorBtn handleCalculator={this.handleCalculator} num={i}/>);
-    }
-    return buttons;
+  handleInputChange = ({ target }) => {
+    this.setState({ [target.name]: target.value })
   }
 
-  createOps = () => {
-    let ops = ['+', '-', '*', '/', '=', 'RESET'];
-    let opsBtns = [];
-    for(let i = 0; i < ops.length; i++){
-      opsBtns.push(<CalculatorBtn handleCalculator={this.handleCalculator} num={ops[i]} />);
-    }
-    return opsBtns;
+  handleSearchMovie = event => {
+    event.preventDefault()
+    axios.get(`http://www.omdbapi.com/?t=${this.state.title}&apikey=trilogy`)
+      .then(({ data: movie }) => {
+        console.log(movie)
+        this.setState({ movie, title: '' })
+      })
   }
 
-  handleNumOne = (nums) => {
-    this.setState({numOne: this.state.numOne + nums});
+  handleAddToWatchlist = () => {
+    let watchlist = JSON.parse(JSON.stringify(this.state.watchlist))
+    watchlist.push(this.state.movie)
+    this.setState({ watchlist, movie: {} })
   }
 
-  handleNumTwo = (nums) => {
-    this.setState({numTwo: this.state.numTwo + nums});
+  handleDeleteMovie = i => {
+    let watchlist = JSON.parse(JSON.stringify(this.state.watchlist))
+    watchlist.splice(i, 1)
+    this.setState({ watchlist })
   }
 
-  handleOp = (oper) => {
-    this.setState({op: oper});
-  } 
-
-  handleResult = () =>{
-    let finalRes;
-    switch (this.state.op) {
-      case'+':
-        finalRes = Number(this.state.numOne) + Number(this.state.numTwo);
-        break;
-      case '-':
-        finalRes = Number(this.state.numOne) - Number(this.state.numTwo);
-        break;
-      case '*':
-        finalRes = Number(this.state.numOne) * Number(this.state.numTwo);
-        break;
-      case '/':
-        finalRes = Number(this.state.numOne) / Number(this.state.numTwo);
-        break;
-      default:
-        break;
-    }
-    this.setState({result: finalRes});
+  render() {
+    return (
+      <div className="container">
+        <Header/>
+        <div className="row">
+          <div className="col-md-6">
+            <h4>Search For A Movie</h4>
+            <form>
+              <div className="form-group">
+                <label htmlFor="title">Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="title"
+                  value={this.state.title}
+                  onChange={this.handleInputChange} />
+              </div>
+              <button className="btn btn-primary" onClick={this.handleSearchMovie}>Search Movie</button>
+            </form>
+            {this.state.movie.Title ?
+              (<div className="card">
+                <img src={this.state.movie.Poster} className="card-img-top" alt={this.state.movie.Title} />
+                <div className="card-body">
+                  <h5 className="card-title">{this.state.movie.Title}</h5>
+                  <p className="card-text">Directed by {this.state.movie.Director}</p>
+                  <button className="btn btn-success" onClick={this.handleAddToWatchlist}>Add To Watchlist</button>
+                </div>
+              </div>) : null}
+          </div>
+          <div className="col-md-6">
+            <h4>Your Watchlist</h4>
+            <ul className="list-group">
+              {
+                this.state.watchlist.map((movie, i) => (
+                  <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
+                    {movie.Title}
+                    <button onClick={() => this.handleDeleteMovie(i)} className="btn btn-danger">x</button>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  handleCalculator = (value) =>{
-    
-    if(typeof value == 'number' && this.state.op === ''){
-      this.handleNumOne(value);
-    }
-    if(typeof value == 'number' && this.state.op !== ''){
-      this.handleNumTwo(value);
-    }
-    if(value === '+' || value === '-' || value === '*' || value === '/' ){
-      this.handleOp(value);
-    }
-    if (value === '=' && this.state.numOne !== '' && this.state.numTwo !== ''){
-      this.handleResult();
-    }
-    if(value === 'RESET'){
-      this.setState({numOne: '', numTwo: '', op: '', result: ''});
-    }
-  }
-
-  render(){
-   return(
-     <div>
-       <h1>First Number: {this.state.numOne}</h1>
-       <h1>Operator: {this.state.op}</h1>
-       <h1>Second Number: {this.state.numTwo}</h1>
-       <h1>Result: {this.state.result}</h1>
-    {this.createNumbers()}
-    <br />
-    <br />
-    {this.createOps()}
-
-     </div>
-   );
-  }
-  
 }
 
-export default App;
+export default App
